@@ -4,8 +4,10 @@ defmodule ExBgfx.Nif do
   # c_src/#{name}_nif.c
   @on_load :init
 
+  app = Mix.Project.config[:app]
+  
   def init do
-    path = :filename.join(:code.priv_dir(:ex_bgfx), 'lib_bgfx')
+    path = :filename.join(:code.priv_dir(unquote(app)), 'lib_bgfx')
     :ok  = :erlang.load_nif(path, 1)
   end
 

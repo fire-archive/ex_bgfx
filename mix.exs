@@ -9,6 +9,7 @@ defmodule Mix.Tasks.Compile.Bgfx do
       IO.binwrite result
       {result, _error_code} = System.cmd("cmake", ["--build", ".", "--target", "install"], stderr_to_stdout: true)
       IO.binwrite result
+      File.cd("..")
     else
       {result, _error_code} = System.cmd("make", ["priv/bgfx.so"], stderr_to_stdout: true)
       IO.binwrite result
