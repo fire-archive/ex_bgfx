@@ -1,12 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-# The project name will be the name of the binary executable created. The
-# test code will also be named ${PROJECT_NAME}_test.
 set(PROJECT_NAME lib_bgfx)
 project(${PROJECT_NAME})
-
-#set(${PROJECT_NAME}_VERSION_MAJOR 0)
-#set(${PROJECT_NAME}_VERSION_MINOR 1)
 
 set(MAIN_SOURCE
     c_src/bgfx_nif.cpp
