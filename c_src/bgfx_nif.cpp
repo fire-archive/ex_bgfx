@@ -10,10 +10,10 @@
 	#include <strings.h>
 	#include <unistd.h>
 #else
-    #include <string.h>	
 #endif
 
-#include "bgfx/c99/bgfx.h"
+#include "bx/platform.h"
+#include "bgfx/bgfx.h"
 
 using namespace nifpp;
 
@@ -22,6 +22,8 @@ static ERL_NIF_TERM _hello(ErlNifEnv *env, int UNUSED(arc),
                    const ERL_NIF_TERM UNUSED(argv[])) {
   return make(env, 0.0);
 }
+
+
 
 static ErlNifFunc nif_funcs[] = {{"_hello", 0, _hello, 0}};
 

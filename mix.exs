@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Compile.Bgfx do
   def run(_) do
     if match? {:win32, _}, :os.type do
       starting_dir = System.cwd()
-      working_dir = Mix.Project.build_path 
+      working_dir = Mix.Project.build_path
       case File.mkdir(working_dir) do
         {:ok, _error_code} -> nil
         {:error, :eexist} -> IO.binwrite working_dir <> " exists.\n"
@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Compile.Bgfx do
         :ok -> nil
         _ -> IO.binwrite "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.cd\n"
       end
-      {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 Win64", "-DCMAKE_INSTALL_PREFIX=..", ".."], stderr_to_stdout: true)
+      {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> (to_string :code.priv_dir(Mix.Project.config[:app])), "-DCMAKE_BUILD_TYPE=RELEASE", starting_dir], stderr_to_stdout: true)
       IO.binwrite result
       {result, _error_code} = System.cmd("cmake", ["--build", ".", "--target", "install"], stderr_to_stdout: true)
       IO.binwrite result
