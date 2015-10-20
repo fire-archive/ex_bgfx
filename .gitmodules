@@ -1,0 +1,9 @@
+[submodule "dep/bgfx"]
+	path = dep/bgfx
+	url = https://github.com/bkaradzic/bgfx.git
+[submodule "dep/bx"]
+	path = dep/bx
+	url = https://github.com/bkaradzic/bx.git
+[submodule "dep/nifpp"]
+	path = dep/nifpp
+	url = https://github.com/goertzenator/nifpp.git
