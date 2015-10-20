@@ -8,13 +8,12 @@ find_package(OpenGL)
 
 add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12=0)
 
-if (NOT FIPS_PNACL)
+if (NOT PNACL)
   include_directories(bgfx/3rdparty/khronos)
 endif()
 include_directories(bgfx/3rdparty)
-#fips_dir(bgfx/src GROUP "src")
-# note: add all files to the build process, bgfx knows
-# itself what to compile on each platform
+# Add everything to the build process, bgfx is smart
+# to know what to compile on each platform
 set(MAIN_DIR bgfx/src)
 set(MAIN_SOURCE
   ${MAIN_DIR}/bgfx.cpp ${MAIN_DIR}/bgfx_p.h
@@ -52,13 +51,13 @@ set(BGFX_SHADERS
   vs_debugfont.sc
   )
 
-if (FIPS_MACOS)
+if (MACOS)
   fips_files(glcontext_nsgl.mm glcontext_nsgl.h)
-elseif (FIPS_IOS)
+elseif (IOS)
   fips_files(glcontext_eagl.mm glcontext_eagl.h)
-elseif (FIPS_LINUX)
+elseif (LINUX)
   fips_files(glcontext_glx.cpp glcontext_glx.h)
-elseif (FIPS_PNACL)
+elseif (PNACL)
   fips_files(glcontext_ppapi.cpp glcontext_ppapi.h)
 elseif (WIN32)
   set(MAIN_SOURCE ${MAIN_SOURCE}  ${MAIN_DIR}/glcontext_wgl.cpp  ${MAIN_DIR}/glcontext_wgl.h)
@@ -79,9 +78,9 @@ set(MAIN_SOURCE ${MAIN_SOURCE}
 # untested, note: OSX and iOS currently
 # automatically link against GL
 if (WIN32)
-#  fips_libs(opengl32)
+#  add_library(opengl32)
 elseif (LINUX)
-#  fips_libs(X11 Xrandr Xi Xinerama Xxf86vm Xcursor GL dl)
+#  add_library(X11 Xrandr Xi Xinerama Xxf86vm Xcursor GL dl)
 elseif (ANDROID)
   # FIXME!
 endif()

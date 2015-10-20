@@ -16,8 +16,15 @@ defmodule ExBgfx.Nif do
     _hello
   end
 
-  # This function will not be overwritten if the nif fails to load
+  def init do
+	  _bgfx_init
+  end
+
   def _hello do
+    exit(:nif_library_not_loaded)
+  end
+  
+  def _bgfx_init do
     exit(:nif_library_not_loaded)
   end
 end
