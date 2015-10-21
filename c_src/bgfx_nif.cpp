@@ -59,7 +59,8 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 }
 
 static ErlNifFunc nif_funcs[] = {
-	{"_hello", 0, _hello, 0}
+	{"_hello", 0, _hello, 0},
+	{ "_bgfx_init", 0, _bgfx_init, ERL_NIF_DIRTY_JOB_CPU_BOUND}
 };
 
 ERL_NIF_INIT(Elixir.ExBgfx.Nif, nif_funcs, load, NULL, NULL, NULL)

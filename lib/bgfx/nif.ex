@@ -16,7 +16,7 @@ defmodule ExBgfx.Nif do
     _hello
   end
 
-  def init do
+  def bgfx_init do
 	  _bgfx_init
   end
 
