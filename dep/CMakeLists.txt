@@ -6,7 +6,7 @@ project(${PROJECT_NAME})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake/Module)
 find_package(OpenGL)
 
-add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12=0)
+add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12 -DBGFX_CONFIG_RENDERER_NULL -DBGFX_CONFIG_RENDERER_DIRECT3D11 -DBGFX_CONFIG_RENDERER_DIRECT3D9=0 -DBGFX_CONFIG_RENDERER_OPENGL)
 
 if (NOT PNACL)
   include_directories(bgfx/3rdparty/khronos)
@@ -15,26 +15,14 @@ include_directories(bgfx/3rdparty)
 # Add everything to the build process, bgfx is smart
 # to know what to compile on each platform
 set(MAIN_DIR bgfx/src)
+seT(ENTRY_DIR bgfx/examples/common/entry)
 set(MAIN_SOURCE
-  ${MAIN_DIR}/bgfx.cpp ${MAIN_DIR}/bgfx_p.h
-  ${MAIN_DIR}/charset.h ${MAIN_DIR}/config.h
-  ${MAIN_DIR}/glimports.h
-  ${MAIN_DIR}/image.cpp ${MAIN_DIR}/image.h
-  ${MAIN_DIR}/ovr.cpp ${MAIN_DIR}/ovr.h
-  ${MAIN_DIR}/renderdoc.cpp ${MAIN_DIR}/renderdoc.h
-  ${MAIN_DIR}/renderer.h
-  ${MAIN_DIR}/renderer_null.cpp
-  ${MAIN_DIR}/vertexdecl.cpp ${MAIN_DIR}/vertexdecl.h
-  ${MAIN_DIR}/varying.def.sc
-
-  # hmm looks like these files must be included
-  # on all platforms, otherwise linker errors
-  # from Bgfx::s_rendererCreator result:
-  ${MAIN_DIR}/renderer_gl.cpp ${MAIN_DIR}/renderer_gl.h
-  ${MAIN_DIR}/renderer_d3d11.cpp ${MAIN_DIR}/renderer_d3d11.h
-  ${MAIN_DIR}/renderer_d3d12.cpp
-  ${MAIN_DIR}/renderer_d3d9.cpp ${MAIN_DIR}/renderer_d3d9.h
-  ${MAIN_DIR}/renderer_vk.cpp
+  #${ENTRY_DIR}/cmd.cpp
+  #${ENTRY_DIR}/dbg.cpp
+  #${ENTRY_DIR}/entry.cpp
+  #${ENTRY_DIR}/entry_windows.cpp
+  #${ENTRY_DIR}/input.cpp
+  ${MAIN_DIR}/amalgamated.cpp
   )
 
 set(BGFX_SHADERS
@@ -51,29 +39,65 @@ set(BGFX_SHADERS
   vs_debugfont.sc
   )
 
-if (MACOS)
-  fips_files(glcontext_nsgl.mm glcontext_nsgl.h)
-elseif (IOS)
-  fips_files(glcontext_eagl.mm glcontext_eagl.h)
-elseif (LINUX)
-  fips_files(glcontext_glx.cpp glcontext_glx.h)
-elseif (PNACL)
-  fips_files(glcontext_ppapi.cpp glcontext_ppapi.h)
-elseif (WIN32)
-  set(MAIN_SOURCE ${MAIN_SOURCE}  ${MAIN_DIR}/glcontext_wgl.cpp  ${MAIN_DIR}/glcontext_wgl.h)
-else()
-  fips_files(glcontext_egl.cpp glcontext_egl.h)
-endif()
-
-set(MAIN_INCLUDE bgfx/include/bgfx)
+set(MAIN_INCLUDE ${MAIN_INCLUDE} bgfx/include/bgfx)
 # Includes
 set(MAIN_SOURCE ${MAIN_SOURCE}
-  ${MAIN_INCLUDE}/c99/bgfx.h
+  #${MAIN_INCLUDE}/c99/bgfx.h
   ${MAIN_INCLUDE}/bgfx.h
-  ${MAIN_INCLUDE}/bgfxdefines.h
-  ${MAIN_INCLUDE}/c99/bgfxplatform.h
-  ${MAIN_INCLUDE}/bgfxplatform.h
+  #${MAIN_INCLUDE}/bgfxdefines.h
+  #${MAIN_INCLUDE}/c99/bgfxplatform.h
+  #${MAIN_INCLUDE}/bgfxplatform.h
+  ${EXAMPLE_COMMON}
   )
+
+
+set(MAIN_INCLUDE ${MAIN_INCLUDE} bgfx/examples/common bgfx/3rdparty/dxsdk/include ${SDL2_INCLUDE_DIR})
+set(COMMON_DIR bgfx/examples/common)
+set(COMMON_IMGUI_DIR ${COMMON_DIR}/imgui)
+
+set(COMMON_NANOVG_DIR ${COMMON_DIR}/nanovg)
+
+set(COMMON_ENTRY_DIR ${COMMON_DIR}/entry)
+set(COMMON_FONT_DIR ${COMMON_DIR}/font)
+set(EXAMPLE_COMMON 
+        ${COMMON_DIR}/aviwriter.h
+        ${COMMON_DIR}/bgfx_utils.cpp ${COMMON_DIR}/bgfx_utils.h
+        ${COMMON_DIR}/bounds.cpp ${COMMON_DIR}/bounds.h
+        ${COMMON_DIR}/camera.cpp ${COMMON_DIR}/camera.h
+        ${COMMON_DIR}/common.h
+        ${COMMON_DIR}/cube_atlas.cpp ${COMMON_DIR}/cube_atlas.h
+
+        ${COMMON_IMGUI_DIR}/fs_imgui_color.sc   ${COMMON_IMGUI_DIR}/vs_imgui_color.sc
+        ${COMMON_IMGUI_DIR}/fs_imgui_cubemap.sc ${COMMON_IMGUI_DIR}/vs_imgui_cubemap.sc
+        ${COMMON_IMGUI_DIR}/fs_imgui_image.sc   ${COMMON_IMGUI_DIR}/vs_imgui_image.sc
+        ${COMMON_IMGUI_DIR}/fs_imgui_texture.sc ${COMMON_IMGUI_DIR}/vs_imgui_texture.sc
+        ${COMMON_IMGUI_DIR}/fs_ocornut_imgui.sc ${COMMON_IMGUI_DIR}/vs_ocornut_imgui.sc
+        ${COMMON_IMGUI_DIR}/fs_imgui_image_swizz.sc
+        ${COMMON_IMGUI_DIR}/droidsans.ttf.h
+        ${COMMON_IMGUI_DIR}/imgui.cpp ${COMMON_IMGUI_DIR}/imgui.h
+        ${COMMON_IMGUI_DIR}/ocornut_imgui.cpp ${COMMON_IMGUI_DIR}/ocornut_imgui.h
+        ${COMMON_IMGUI_DIR}/varying.def.sc
+        ${COMMON_NANOVG_DIR}/fs_nanovg_fill.sc ${COMMON_NANOVG_DIR}/vs_nanovg_fill.sc
+        ${COMMON_NANOVG_DIR}/fontstash.h
+        ${COMMON_NANOVG_DIR}/nanovg.cpp ${COMMON_NANOVG_DIR}/nanovg.h
+        ${COMMON_NANOVG_DIR}/nanovg_bgfx.cpp
+        ${COMMON_NANOVG_DIR}/varying.def.sc
+        ${COMMON_FONT_DIR}/fs_font_basic.sc
+        ${COMMON_FONT_DIR}/vs_font_basic.sc
+        ${COMMON_FONT_DIR}/fs_font_distance_field.sc
+        ${COMMON_FONT_DIR}/vs_font_distance_field.sc
+        ${COMMON_FONT_DIR}/fs_font_distance_field_subpixel.sc
+        ${COMMON_FONT_DIR}/vs_font_distance_field_subpixel.sc
+        ${COMMON_FONT_DIR}/font_manager.cpp ${COMMON_FONT_DIR}/font_manager.h
+        ${COMMON_FONT_DIR}/text_buffer_manager.cpp ${COMMON_FONT_DIR}/text_buffer_manager.h
+        ${COMMON_FONT_DIR}/text_metrics.cpp ${COMMON_FONT_DIR}/text_metrics.h
+        ${COMMON_FONT_DIR}/utf8.cpp ${COMMON_FONT_DIR}/utf8.h ${COMMON_FONT_DIR}/varying.def.sc
+        ${COMMON_ENTRY_DIR}/cmd.cpp  ${COMMON_ENTRY_DIR}/cmd.h
+        #${COMMON_ENTRY_DIR}/dbg.cpp  ${COMMON_ENTRY_DIR}/dbg.h
+        ${COMMON_ENTRY_DIR}/entry.cpp  ${COMMON_ENTRY_DIR}/entry.h  ${COMMON_ENTRY_DIR}/entry_p.h
+        ${COMMON_ENTRY_DIR}/input.cpp  ${COMMON_ENTRY_DIR}/input.h
+    )
+
 
 # untested, note: OSX and iOS currently
 # automatically link against GL
@@ -85,7 +109,8 @@ elseif (ANDROID)
   # FIXME!
 endif()
 
-add_library(${PROJECT_NAME} ${MAIN_SOURCE})
+add_library(${PROJECT_NAME} STATIC ${MAIN_SOURCE} ${EXAMPLE_COMMON})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} delayimp gdi32 psapi ${SDL2_LIBRARY})
 #set(CXX clang++)
 set(ERL_ARG erl -eval "io:format(\"~s~n\", [lists:concat([code:root_dir(), \"/erts-\", erlang:system_info(version), \"/include\"])])" -s init stop -noshell)
 
@@ -106,4 +131,4 @@ endif()
 #install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION priv)
 #install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION priv COMPONENT Libraries)
 
-include_directories(bx/include bx/include/compat/msvc bgfx/include ${OPENGL_INCLUDE_DIR})
+include_directories(${MAIN_INCLUDE} bx/include bx/include/compat/msvc bgfx/include ${OPENGL_INCLUDE_DIR})
