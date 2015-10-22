@@ -18,10 +18,10 @@ defmodule ExBgfx.Nif do
 
   def bgfx_init(type, vendor_id, device_id, callback, reallocator) do
     case type do
-      :null -> 0       # No rendering.
-			:direct3d9 -> 1  # Direct3D 9.0
+      :null -> 0        # No rendering.
+			:direct3d9 -> 1   # Direct3D 9.0
 			:direct3d11 -> 2  # Direct3D 11.0
-			:direct3d12 -> 3 # Direct3D 12.0
+			:direct3d12 -> 3  # Direct3D 12.0
 			:metal ->  4      # Metal
 			:opengles -> 5    # OpenGL ES 2.0+
 			:opengl -> 6      # OpenGL 2.1+

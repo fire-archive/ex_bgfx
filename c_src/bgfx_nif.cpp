@@ -31,6 +31,28 @@ static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 												 "callback_interface_ptr");
 	nifpp::register_resource< bx::ReallocatorI* >(env, nullptr,
 												  "reallocator_interface_ptr");
+	nifpp::register_resource<SDL_Window *>(env, nullptr, "sdl_window_ptr");
+	SDL_Init(0
+		| SDL_INIT_VIDEO
+		| SDL_INIT_GAMECONTROLLER
+		);
+
+	auto window = nifpp::construct_resource<SDL_Window *>(SDL_CreateWindow("bgfx"
+		, SDL_WINDOWPOS_UNDEFINED
+		, SDL_WINDOWPOS_UNDEFINED
+		, ENTRY_DEFAULT_WIDTH
+		, ENTRY_DEFAULT_HEIGHT
+		, SDL_WINDOW_SHOWN
+		| SDL_WINDOW_RESIZABLE
+		));
+
+	//m_flags[0] = 0
+	//	| ENTRY_WINDOW_FLAG_ASPECT_RATIO
+	//	| ENTRY_WINDOW_FLAG_FRAME
+	//	;
+
+	//s_userEventStart = SDL_RegisterEvents(7);
+	bgfx::sdlSetWindow(*window);
 	return 0;
 }
 
@@ -45,27 +67,6 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 {
 	try
 	{
-		SDL_Init(0
-			| SDL_INIT_VIDEO
-			| SDL_INIT_GAMECONTROLLER
-			);
-
-		auto window = SDL_CreateWindow("bgfx"
-			, SDL_WINDOWPOS_UNDEFINED
-			, SDL_WINDOWPOS_UNDEFINED
-			, ENTRY_DEFAULT_WIDTH
-			, ENTRY_DEFAULT_HEIGHT
-			, SDL_WINDOW_SHOWN
-			| SDL_WINDOW_RESIZABLE
-			);
-
-		//m_flags[0] = 0
-		//	| ENTRY_WINDOW_FLAG_ASPECT_RATIO
-		//	| ENTRY_WINDOW_FLAG_FRAME
-		//	;
-
-		//s_userEventStart = SDL_RegisterEvents(7);
-		bgfx::sdlSetWindow(window);
 		auto _type = nifpp::get< int >(env, argv[0]);
 		auto _vendor_id = nifpp::get< unsigned int >(env, argv[1]);
 		auto _device_id = nifpp::get< unsigned int >(env, argv[2]);
