@@ -23,28 +23,20 @@ using namespace nifpp;
 using namespace std;
 
 extern "C" {
+
+/*
+Create a sdl window. If you require no sdl windows for server purposes, create a new nif.
+*/
 static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 {
-	//nifpp::register_resource< bgfx::RendererType::Enum >(env, nullptr,
-	//														 "renderer_type");
 	nifpp::register_resource< bgfx::CallbackI* >(env, nullptr,
 												 "callback_interface_ptr");
 	nifpp::register_resource< bx::ReallocatorI* >(env, nullptr,
 												  "reallocator_interface_ptr");
-	nifpp::register_resource<SDL_Window *>(env, nullptr, "sdl_window_ptr");
-	SDL_Init(0
-		| SDL_INIT_VIDEO
-		| SDL_INIT_GAMECONTROLLER
-		);
+	nifpp::register_resource< SDL_Window* >(env, nullptr, "sdl_window_ptr");
+	SDL_Init(0 | SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 
-	auto window = nifpp::construct_resource<SDL_Window *>(SDL_CreateWindow("bgfx"
-		, SDL_WINDOWPOS_UNDEFINED
-		, SDL_WINDOWPOS_UNDEFINED
-		, ENTRY_DEFAULT_WIDTH
-		, ENTRY_DEFAULT_HEIGHT
-		, SDL_WINDOW_SHOWN
-		| SDL_WINDOW_RESIZABLE
-		));
+	auto window = nifpp::construct_resource< SDL_Window* >(SDL_CreateWindow("bgfx", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ENTRY_DEFAULT_WIDTH, ENTRY_DEFAULT_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE));
 
 	//m_flags[0] = 0
 	//	| ENTRY_WINDOW_FLAG_ASPECT_RATIO
@@ -78,9 +70,8 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 		//	nifpp::get< bgfx::CallbackI* >(env, argv[3]));
 		//auto _reallocator = nifpp::construct_resource< bx::ReallocatorI* >(
 		//	nifpp::get< bx::ReallocatorI* >(env, argv[4]));
-		auto output = nifpp::make(env, bgfx::init(static_cast< bgfx::RendererType::Enum >(_type), _vendor_id, _device_id, nullptr,
+		return nifpp::make(env, bgfx::init(static_cast< bgfx::RendererType::Enum >(_type), _vendor_id, _device_id, nullptr,
 			nullptr));
-		return output;
 	}
 	catch (nifpp::badarg)
 	{
@@ -90,8 +81,7 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 
 static ErlNifFunc nif_funcs[] = {
 	{"_hello", 0, _hello, 0},
-	{ "_bgfx_init", 5, _bgfx_init, ERL_NIF_DIRTY_JOB_CPU_BOUND}
-};
+	{"_bgfx_init", 5, _bgfx_init, ERL_NIF_DIRTY_JOB_CPU_BOUND}};
 
 ERL_NIF_INIT(Elixir.ExBgfx.Nif, nif_funcs, load, NULL, NULL, NULL)
 } // extern C

@@ -11,10 +11,14 @@ defmodule ExBgfxTest do
   end
 
   test "bgfx null renderer test" do
-    assert ExBgfx.Nif.bgfx_init(:opengl, 0, 0, :undefined, :undefined) == true
+    assert ExBgfx.Nif.bgfx_init(:null, 0, 0, :undefined, :undefined) == true
   end
 
-  #test "bgfx d3d12 renderer test" do
-  #  assert ExBgfx.Nif.bgfx_init(3,0,0,:undefined,:undefined) == true
-  #end
+  test "bgfx d3d12 renderer test" do
+    assert ExBgfx.Nif.bgfx_init(:direct3d12, 0, 0, :undefined, :undefined) == true
+  end
+
+  test "bgfx opengl renderer test" do
+    assert ExBgfx.Nif.bgfx_init(:opengl, 0, 0, :undefined, :undefined) == true
+  end
 end
