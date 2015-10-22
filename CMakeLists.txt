@@ -34,5 +34,5 @@ include_directories(dep/bx/include/compat/msvc dep/bgfx/examples/common dep/bgfx
 
 target_link_libraries(${PROJECT_NAME} bgfx)
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION . ARCHIVE DESTINATION .)
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)
 #install(FILES ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION priv COMPONENT Libraries)
