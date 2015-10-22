@@ -1,4 +1,4 @@
-defmodule ExBgfx.Nif do
+defmodule Bgfx.Nif do
   # When your move/rename this file (and you should) make sure
   # you also change the ERL_NIF_INIT call at the bottom of
   # c_src/#{name}_nif.c
@@ -9,11 +9,6 @@ defmodule ExBgfx.Nif do
   def init do
     path = :filename.join(:code.priv_dir(unquote(app)), 'lib_bgfx')
     :ok  = :erlang.load_nif(path, 1)
-  end
-
-  # A simple wrapper around the NIF call
-  def hello do
-    _hello
   end
 
   def bgfx_init(type, vendor_id, device_id, callback, reallocator) do
@@ -31,10 +26,6 @@ defmodule ExBgfx.Nif do
     end
     |> _bgfx_init(vendor_id, device_id, callback, reallocator)
     #:erlang.bump_reductions(5000)
-  end
-
-  def _hello do
-    exit(:nif_library_not_loaded)
   end
   
   def _bgfx_init(_,_,_,_,_) do
