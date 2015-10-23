@@ -15,13 +15,14 @@ defmodule BgfxTest do
   #end
 
   test "bgfx d3d12 renderer test extended" do
-    #assert Bgfx.Nif.bgfx_init(:count, 0, 0, :undefined, :undefined) == :ok
+    window = Bgfx.Nif.sdl_create_window
+    assert Bgfx.Nif.bgfx_init(:count, 0, 0, :undefined, :undefined, window) == :ok
     width = 1280
     height = 768
     #assert Bgfx.Nif.reset(width, height, 0x00000080) == :ok
     use Bitwise
     #assert Bgfx.Nif.set_view_clear(0, bor(0x0001, 0x0002), 0x303030ff, 1.0, 0) == :ok
-    assert Bgfx.Nif.run == :ok
+    #assert Bgfx.Nif.run(window) == :ok
   end
 
   #test "bgfx opengl renderer test extended" do

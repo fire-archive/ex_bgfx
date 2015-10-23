@@ -11,7 +11,7 @@ defmodule Bgfx.Nif do
     :ok  = :erlang.load_nif(path, 1)
   end
 
-  def bgfx_init(type, vendor_id, device_id, callback, reallocator) do
+  def bgfx_init(type, vendor_id, device_id, callback, reallocator, window) do
     case type do
       :null -> 0        # No rendering.
 			:direct3d9 -> 1   # Direct3D 9.0
@@ -24,7 +24,7 @@ defmodule Bgfx.Nif do
 			:count -> 8
       _ -> exit(type)
     end
-    |> _bgfx_init(vendor_id, device_id, callback, reallocator)
+    |> _bgfx_init(vendor_id, device_id, callback, reallocator, window)
     #:erlang.bump_reductions(5000)
   end
 
@@ -36,8 +36,12 @@ defmodule Bgfx.Nif do
     _bgfx_set_view_clear(id, flags, rgba, depth, stencil)
   end
 
-  def run do
-    _bgfx_run
+  def run(window) do
+    _bgfx_run(window)
+  end
+
+  def sdl_create_window do
+    _bgfx_sdl_create_window
   end
   
   def _bgfx_reset(_,_,_) do
@@ -48,11 +52,15 @@ defmodule Bgfx.Nif do
     exit(:nif_library_not_loaded)
   end
 
-  def _bgfx_run do
+  def _bgfx_sdl_create_window do
+    exit(:nif_library_not_loaded)
+  end
+    
+  def _bgfx_run(_) do
     exit(:nif_library_not_loaded)
   end
   
-  def _bgfx_init(_,_,_,_,_) do
+  def _bgfx_init(_,_,_,_,_,_) do
     exit(:nif_library_not_loaded)
   end
 end
