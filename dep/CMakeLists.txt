@@ -11,7 +11,7 @@ add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12 -DBGFX_CONFIG_RENDERER_NULL -D
 if (NOT PNACL)
   include_directories(bgfx/3rdparty/khronos)
 endif()
-include_directories(bgfx/3rdparty)
+include_directories(bgfx/3rdparty bx/include)
 # Add everything to the build process, bgfx is smart
 # to know what to compile on each platform
 set(MAIN_DIR bgfx/src)

@@ -17,6 +17,7 @@
 #include "nifpp.h"
 #include <stdio.h>
 #include "bgfx/bgfxplatform.h"
+#include "bx/macros.h"
 #include "bgfx/bgfx.h"
 #include "logo.h"
 #include <thread>
@@ -50,7 +51,7 @@ static ERL_NIF_TERM _bgfx_sdl_create_window(ErlNifEnv* env, int argc,
 {
 	try
 	{
-		auto Window = nifpp::construct_resource< SDL_Window* >(SDL_CreateWindow("bgfx", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI));
+		auto Window = nifpp::construct_resource< SDL_Window* >(SDL_CreateWindow("bgfx", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Width, Height, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI));
 		return nifpp::make(env, Window);
 	}
 	catch (nifpp::badarg)
@@ -116,8 +117,8 @@ static ERL_NIF_TERM _bgfx_set_view_clear(ErlNifEnv* env, int argc,
 		auto _rgba = nifpp::get< uint32_t >(env, argv[2]);
 		auto _depth = nifpp::get< double >(env, argv[3]);
 		auto _stencil = nifpp::get< uint8_t >(env, argv[4]);
-		bgfx::setViewClear(_id, _flags, _rgba, static_cast< float >(_depth), _stencil);
-		return nifpp::make(env, nifpp::str_atom("ok"));
+//		bgfx::setViewClear(_id, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, static_cast< float >(_depth), _stencil);
+		return nifpp::make(env, nifpp::str_atom("error"));
 	}
 	catch (nifpp::badarg)
 	{
@@ -132,14 +133,12 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 	{
 		nifpp::resource_ptr< SDL_Window* > Window;
 		nifpp::get< SDL_Window* >(env, argv[0], Window);
+		bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 0.0f);
 		uint32_t debug = BGFX_DEBUG_TEXT;
-		uint32_t reset = BGFX_RESET_VSYNC;
-		bgfx::reset(Width, Height, reset);
 		// Enable debug text.
 		bgfx::setDebug(debug);
 
-		// Set view 0 clear state.
-		bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+		SDL_ShowWindow(*Window);
 		SDL_Event e;
 		auto running = true;
 		while (running)
@@ -177,7 +176,6 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 			bgfx::dbgTextImage(bx::uint16_max(Width / 2 / 8, 20) - 20, bx::uint16_max(Height / 2 / 16, 6) - 6, 40, 12, s_logo, 160);
 			bgfx::dbgTextPrintf(0, 1, 0x4f, "bgfx/examples/lib_bgfx");
 			bgfx::dbgTextPrintf(0, 2, 0x6f, "Description: Initialization and debug text in Elixir and SDL2.");
-
 			// Advance to next frame. Rendering thread will be kicked to
 			// process submitted rendering primitives.
 			bgfx::frame();
