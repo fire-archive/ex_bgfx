@@ -5,8 +5,8 @@ project(${PROJECT_NAME})
 #include (InstallRequiredSystemLibraries)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake/Module)
 find_package(OpenGL)
-#set(SDL2_BUILDING_LIBRARY ON)
-#find_package(SDL2)
+set(SDL2_BUILDING_LIBRARY ON)
+find_package(SDL2)
 find_package(glfw)
 
 set(MAIN_SOURCE
@@ -14,7 +14,7 @@ set(MAIN_SOURCE
     c_src/bgfx_nif.cpp
     )
 
-add_definitions(-DENTRY_CONFIG_USE_GLFW -DGLEW_STATIC)
+add_definitions(-DENTRY_CONFIG_USE_SDL) #-DGLEW_STATIC)
   
 add_subdirectory(dep)
 

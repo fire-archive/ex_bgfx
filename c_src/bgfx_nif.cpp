@@ -29,7 +29,10 @@ using namespace nifpp;
 using namespace std;
 
 extern "C" {
-
+//	int _main_(int argc, char * argv[])
+//	{
+//		return 0;
+//	}
 /*
 Create a sdl window. If you require no sdl windows for server purposes, create a new nif.
 */
@@ -41,9 +44,9 @@ static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 												  "reallocator_interface_ptr");
 	//nifpp::register_resource< SDL_Window* >(env, nullptr, "sdl_window_ptr");
 	//nifpp::register_resource< entry::Context >(env, nullptr, "context_ptr");
-	
+
 	//SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-	
+
 	const uint32_t width = 1280;
 	const uint32_t height = 768;
 
@@ -55,7 +58,7 @@ static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 
 	//s_userEventStart = SDL_RegisterEvents(7);
 	//SDL_Delay(500);
-	return 0;//!bgfx::sdlSetWindow(*window);
+	return 0; //!bgfx::sdlSetWindow(*window);
 }
 
 static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
@@ -77,7 +80,9 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 		//auto context = nifpp::construct_resource< entry::Context >();
 		//context->run(0, nullptr);
 		return nifpp::make(env, bgfx::init(static_cast< bgfx::RendererType::Enum >(_type), _vendor_id, _device_id, nullptr,
-										   nullptr) ? nifpp::str_atom("ok") : nifpp::str_atom("error")); //nifpp::make(env, nifpp::str_atom("ok"));
+										   nullptr)
+									? nifpp::str_atom("ok")
+									: nifpp::str_atom("error")); //nifpp::make(env, nifpp::str_atom("ok"));
 	}
 	catch (nifpp::badarg)
 	{
@@ -104,7 +109,7 @@ static ERL_NIF_TERM _bgfx_reset(ErlNifEnv* env, int argc,
 
 // void bgfx::setViewClear(uint8_t _id, uint16_t _flags, uint32_t _rgba, float _depth, uint8_t _stencil)
 static ERL_NIF_TERM _bgfx_set_view_clear(ErlNifEnv* env, int argc,
-	const ERL_NIF_TERM argv[])
+										 const ERL_NIF_TERM argv[])
 {
 	try
 	{
@@ -113,7 +118,7 @@ static ERL_NIF_TERM _bgfx_set_view_clear(ErlNifEnv* env, int argc,
 		auto _rgba = nifpp::get< uint32_t >(env, argv[2]);
 		auto _depth = nifpp::get< double >(env, argv[3]);
 		auto _stencil = nifpp::get< uint8_t >(env, argv[4]);
-		bgfx::setViewClear(_id, _flags, _rgba, static_cast<float>(_depth), _stencil);
+		bgfx::setViewClear(_id, _flags, _rgba, static_cast< float >(_depth), _stencil);
 		return nifpp::make(env, nifpp::str_atom("ok"));
 	}
 	catch (nifpp::badarg)
@@ -123,14 +128,17 @@ static ERL_NIF_TERM _bgfx_set_view_clear(ErlNifEnv* env, int argc,
 }
 
 static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
-	const ERL_NIF_TERM argv[])
+							  const ERL_NIF_TERM argv[])
 {
 	try
 	{
-
 		using namespace entry;
-		auto contex = std::make_unique<entry::Context>();
-		return contex->run([]() {
+		auto contex = std::make_unique< entry::Context >();
+		char fakeParam[] = "erl";
+		char* fakeargv[] = {fakeParam, NULL};
+		int fakeargc = 1;
+		//entry::initMain(fakeargc, fakeargv);
+		contex->run([]() {
 			uint32_t width = 1280;
 			uint32_t height = 720;
 			uint32_t debug = BGFX_DEBUG_TEXT;
@@ -143,14 +151,9 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 			bgfx::setDebug(debug);
 
 			// Set view 0 clear state.
-			bgfx::setViewClear(0
-				, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH
-				, 0x303030ff
-				, 1.0f
-				, 0
-				);
+			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
 
-			while (true)
+			while (true)//!entry::processEvents(width, height, debug, reset))
 			{
 				// Set view 0 default viewport.
 				bgfx::setViewRect(0, 0, 0, width, height);
@@ -161,24 +164,17 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 
 				// Use debug font to print information about this example.
 				bgfx::dbgTextClear();
-				bgfx::dbgTextImage(bx::uint16_max(width / 2 / 8, 20) - 20
-					, bx::uint16_max(height / 2 / 16, 6) - 6
-					, 40
-					, 12
-					, s_logo
-					, 160
-					);
+				bgfx::dbgTextImage(bx::uint16_max(width / 2 / 8, 20) - 20, bx::uint16_max(height / 2 / 16, 6) - 6, 40, 12, s_logo, 160);
 				bgfx::dbgTextPrintf(0, 1, 0x4f, "bgfx/examples/lib_bgfx");
-				bgfx::dbgTextPrintf(0, 2, 0x6f, "Description: Initialization and debug text in elixir.");
+				bgfx::dbgTextPrintf(0, 2, 0x6f, "Description: Initialization and debug text in Elixir and SDL2.");
 
 				// Advance to next frame. Rendering thread will be kicked to
 				// process submitted rendering primitives.
 				bgfx::frame();
-				
 			}
-			bgfx::shutdown(); 
+			bgfx::shutdown();
 			return 0;
-		});
+		}, fakeargc, fakeargv);
 		//cmdInit();
 		//cmdAdd("mouselock", cmdMouseLock);
 		//cmdAdd("graphics", cmdGraphics);
@@ -222,7 +218,7 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 			bgfx::frame();
 		}
 		bgfx::shutdown();*/
-/*
+		/*
 		inputRemoveBindings("bindings");
 		inputShutdown();
 
