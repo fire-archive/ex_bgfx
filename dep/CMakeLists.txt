@@ -6,7 +6,7 @@ project(${PROJECT_NAME})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake/Module)
 find_package(OpenGL)
 
-add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12 -DBGFX_CONFIG_RENDERER_NULL -DBGFX_CONFIG_RENDERER_DIRECT3D11 -DBGFX_CONFIG_RENDERER_DIRECT3D9=0 -DBGFX_CONFIG_RENDERER_OPENGL -DBGFX_CONFIG_MULTITHREADED)
+add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12 -DBGFX_CONFIG_RENDERER_NULL=0 -DBGFX_CONFIG_RENDERER_DIRECT3D11 -DBGFX_CONFIG_RENDERER_DIRECT3D9=0 -DBGFX_CONFIG_RENDERER_OPENGL -DBGFX_CONFIG_MULTITHREADED=0 -DENTRY_CONFIG_USE_SDL -DBGFX_CONFIG_USE_TINYSTL)
 
 if (NOT PNACL)
   include_directories(bgfx/3rdparty/khronos)
@@ -17,11 +17,6 @@ include_directories(bgfx/3rdparty)
 set(MAIN_DIR bgfx/src)
 seT(ENTRY_DIR bgfx/examples/common/entry)
 set(MAIN_SOURCE
-  #${ENTRY_DIR}/cmd.cpp
-  #${ENTRY_DIR}/dbg.cpp
-  #${ENTRY_DIR}/entry.cpp
-  #${ENTRY_DIR}/entry_windows.cpp
-  #${ENTRY_DIR}/input.cpp
   ${MAIN_DIR}/amalgamated.cpp
   )
 
@@ -41,7 +36,7 @@ set(BGFX_SHADERS
 
 set(MAIN_INCLUDE ${MAIN_INCLUDE} bgfx/include/bgfx)
 # Includes
-set(MAIN_SOURCE ${MAIN_SOURCE}
+set(MAIN_SOURCE ${MAIN_SOURCE} 
   #${MAIN_INCLUDE}/c99/bgfx.h
   ${MAIN_INCLUDE}/bgfx.h
   #${MAIN_INCLUDE}/bgfxdefines.h
@@ -51,7 +46,7 @@ set(MAIN_SOURCE ${MAIN_SOURCE}
   )
 
 
-set(MAIN_INCLUDE ${MAIN_INCLUDE} bgfx/examples/common bgfx/3rdparty/dxsdk/include ${SDL2_INCLUDE_DIR})
+set(MAIN_INCLUDE ${MAIN_INCLUDE} bgfx/examples/common bgfx/3rdparty/dxsdk/include  ${SDL2_INCLUDE_DIR})
 set(COMMON_DIR bgfx/examples/common)
 set(COMMON_IMGUI_DIR ${COMMON_DIR}/imgui)
 
@@ -93,11 +88,12 @@ set(EXAMPLE_COMMON
         ${COMMON_FONT_DIR}/text_metrics.cpp ${COMMON_FONT_DIR}/text_metrics.h
         ${COMMON_FONT_DIR}/utf8.cpp ${COMMON_FONT_DIR}/utf8.h ${COMMON_FONT_DIR}/varying.def.sc
         ${COMMON_ENTRY_DIR}/cmd.cpp  ${COMMON_ENTRY_DIR}/cmd.h
-        #${COMMON_ENTRY_DIR}/dbg.cpp  ${COMMON_ENTRY_DIR}/dbg.h
-        ${COMMON_ENTRY_DIR}/entry.cpp  ${COMMON_ENTRY_DIR}/entry.h  ${COMMON_ENTRY_DIR}/entry_p.h
+        ${COMMON_ENTRY_DIR}/dbg.cpp  ${COMMON_ENTRY_DIR}/dbg.h
+        #${COMMON_ENTRY_DIR}/entry.cpp  ${COMMON_ENTRY_DIR}/entry.h  ${COMMON_ENTRY_DIR}/entry_p.h
         ${COMMON_ENTRY_DIR}/input.cpp  ${COMMON_ENTRY_DIR}/input.h
     )
 
+ # set(EXAMPLE_COMMON ${EXAMPLE_COMMON} ${COMMON_ENTRY_DIR}/entry_sdl.cpp)
 
 # untested, note: OSX and iOS currently
 # automatically link against GL
@@ -109,8 +105,8 @@ elseif (ANDROID)
   # FIXME!
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${MAIN_SOURCE} ${EXAMPLE_COMMON})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} delayimp gdi32 psapi ${SDL2_LIBRARY})
+add_library(${PROJECT_NAME} STATIC ${EXAMPLE_COMMON} ${MAIN_SOURCE})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARY})
 #set(CXX clang++)
 set(ERL_ARG erl -eval "io:format(\"~s~n\", [lists:concat([code:root_dir(), \"/erts-\", erlang:system_info(version), \"/include\"])])" -s init stop -noshell)
 

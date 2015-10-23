@@ -27,6 +27,22 @@ defmodule Bgfx.Nif do
     |> _bgfx_init(vendor_id, device_id, callback, reallocator)
     #:erlang.bump_reductions(5000)
   end
+
+  def reset(height, width, flags) do
+    _bgfx_reset(height, width, flags)
+  end
+
+  def set_view_clear(id, flags, rgba, depth, stencil) do
+    _bgfx_set_view_clear(id, flags, rgba, depth, stencil)
+  end
+  
+  def _bgfx_reset(_,_,_) do
+    exit(:nif_library_not_loaded)
+  end
+  
+  def _bgfx_set_view_clear(_,_,_,_,_) do
+    exit(:nif_library_not_loaded)
+  end
   
   def _bgfx_init(_,_,_,_,_) do
     exit(:nif_library_not_loaded)
