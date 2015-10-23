@@ -4,19 +4,18 @@
 #define UNUSED(x) UNUSED_##x
 #endif
 
-#include "nifpp.h"
-#include <stdio.h>
 #ifndef _WIN32
 #include <strings.h>
 #include <unistd.h>
 #else
 #endif
 
+#include "common.h"
 #include "SDL.h"
 #include "SDL_syswm.h"
-#include "bgfx_entry.hpp"
-#include "common.h"
-#include "entry/entry_p.h"
+#include "bx/uint32_t.h"
+#include "nifpp.h"
+#include <stdio.h>
 #include "bgfx/bgfxplatform.h"
 #include "bgfx/bgfx.h"
 #include "logo.h"
@@ -30,7 +29,7 @@ using namespace std;
 
 extern "C" {
 /*
-Create a sdl window. If you require no sdl windows for server purposes, create a new nif.
+Create a sdl window. If you require removal of sdl windows for server purposes, create a new nif.
 */
 static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 {
@@ -38,9 +37,6 @@ static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 												 "callback_interface_ptr");
 	nifpp::register_resource< bx::ReallocatorI* >(env, nullptr,
 												  "reallocator_interface_ptr");
-	const uint32_t width = 1280;
-	const uint32_t height = 768;
-
 	return 0;
 }
 
@@ -59,7 +55,7 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 		return nifpp::make(env, bgfx::init(static_cast< bgfx::RendererType::Enum >(_type), _vendor_id, _device_id, nullptr,
 										   nullptr)
 									? nifpp::str_atom("ok")
-									: nifpp::str_atom("error")); //nifpp::make(env, nifpp::str_atom("ok"));
+									: nifpp::str_atom("error"));
 	}
 	catch (nifpp::badarg)
 	{
@@ -108,30 +104,56 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 {
 	try
 	{
-		using namespace entry;
-		auto contex = std::make_unique< entry::Context >();
-		char fakeParam[] = "erl";
-		char* fakeargv[] = {fakeParam, NULL};
-		int fakeargc = 1;
-		contex->run([]() {
-			uint32_t width = 1280;
-			uint32_t height = 720;
+			uint32_t Width = 1280;
+			uint32_t Height = 720;
+			SDL_SysWMinfo Info;
+			auto Window = SDL_CreateWindow("bgfx"
+				, SDL_WINDOWPOS_UNDEFINED
+				, SDL_WINDOWPOS_UNDEFINED
+				, Width
+				, Height
+				, SDL_WINDOW_SHOWN
+				| SDL_WINDOW_RESIZABLE
+				| SDL_WINDOW_ALLOW_HIGHDPI
+				);
 			uint32_t debug = BGFX_DEBUG_TEXT;
 			uint32_t reset = BGFX_RESET_VSYNC;
-
+			bgfx::sdlSetWindow(Window);
+			bgfx::renderFrame();
 			bgfx::init();
-			bgfx::reset(width, height, reset);
+			bgfx::reset(Width, Height, reset);
 
 			// Enable debug text.
 			bgfx::setDebug(debug);
 
 			// Set view 0 clear state.
 			bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
-
-			while (true)//!entry::processEvents(width, height, debug, reset))
+			SDL_Event e;
+			auto running = true;
+			while (running) 
 			{
+				while (SDL_PollEvent(&e))
+				{
+
+					if (e.type == SDL_QUIT)
+					{
+						running = false;
+					}
+					if (e.type == SDL_KEYDOWN) {
+						running = false;
+					}
+					if (e.type == SDL_WINDOWEVENT) {
+						switch (e.window.event)
+						{
+						case SDL_WINDOWEVENT_CLOSE:
+							running = false;
+							break;
+						}
+					}
+				}
+			
 				// Set view 0 default viewport.
-				bgfx::setViewRect(0, 0, 0, width, height);
+				bgfx::setViewRect(0, 0, 0, Width, Height);
 
 				// This dummy draw call is here to make sure that view 0 is cleared
 				// if no other draw calls are submitted to view 0.
@@ -139,7 +161,7 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 
 				// Use debug font to print information about this example.
 				bgfx::dbgTextClear();
-				bgfx::dbgTextImage(bx::uint16_max(width / 2 / 8, 20) - 20, bx::uint16_max(height / 2 / 16, 6) - 6, 40, 12, s_logo, 160);
+				bgfx::dbgTextImage(bx::uint16_max(Width / 2 / 8, 20) - 20, bx::uint16_max(Height / 2 / 16, 6) - 6, 40, 12, s_logo, 160);
 				bgfx::dbgTextPrintf(0, 1, 0x4f, "bgfx/examples/lib_bgfx");
 				bgfx::dbgTextPrintf(0, 2, 0x6f, "Description: Initialization and debug text in Elixir and SDL2.");
 
@@ -147,9 +169,11 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 				// process submitted rendering primitives.
 				bgfx::frame();
 			}
+			SDL_DestroyWindow(Window);
 			bgfx::shutdown();
+			/*
 			return 0;
-		}, fakeargc, fakeargv);
+		}, fakeargc, fakeargv);*/
 		return nifpp::make(env, nifpp::str_atom("ok"));
 	}
 	catch (nifpp::badarg)
