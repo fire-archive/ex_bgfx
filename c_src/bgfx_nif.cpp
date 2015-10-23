@@ -73,68 +73,14 @@ static ERL_NIF_TERM _bgfx_init(ErlNifEnv* env, int argc,
 		nifpp::get_throws(env, argv[4], reallocate_atom);
 		nifpp::resource_ptr< SDL_Window* > Window;
 		nifpp::get< SDL_Window* >(env, argv[5], Window);
-		uint32_t debug = BGFX_DEBUG_TEXT;
-		uint32_t reset = BGFX_RESET_VSYNC;
-		bgfx::sdlSetWindow(*Window);
+		SDL_SysWMinfo wmInfo;
+		SDL_VERSION(&wmInfo.version);
+		SDL_GetWindowWMInfo(*Window, &wmInfo);
+		HWND hwnd = wmInfo.info.win.window;
+		bgfx::winSetHwnd(hwnd);
 		bgfx::renderFrame();
 		bgfx::init(static_cast< bgfx::RendererType::Enum >(_type), _vendor_id, _device_id, nullptr,
 				   nullptr);
-		bgfx::reset(Width, Height, reset);
-		// Enable debug text.
-		bgfx::setDebug(debug);
-
-		// Set view 0 clear state.
-		bgfx::setViewClear(0
-			, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH
-			, 0x303030ff
-			, 1.0f
-			, 0
-			);
-		SDL_Event e;
-		auto running = true;
-		while (running)
-		{
-			while (SDL_PollEvent(&e))
-			{
-
-				if (e.type == SDL_QUIT)
-				{
-					running = false;
-				}
-				if (e.type == SDL_KEYDOWN)
-				{
-					running = false;
-				}
-				if (e.type == SDL_WINDOWEVENT)
-				{
-					switch (e.window.event)
-					{
-					case SDL_WINDOWEVENT_CLOSE:
-						running = false;
-						break;
-					}
-				}
-			}
-
-			// Set view 0 default viewport.
-			bgfx::setViewRect(0, 0, 0, Width, Height);
-
-			// This dummy draw call is here to make sure that view 0 is cleared
-			// if no other draw calls are submitted to view 0.
-			bgfx::touch(0);
-
-			// Use debug font to print information about this example.
-			bgfx::dbgTextClear();
-			bgfx::dbgTextImage(bx::uint16_max(Width / 2 / 8, 20) - 20, bx::uint16_max(Height / 2 / 16, 6) - 6, 40, 12, s_logo, 160);
-			bgfx::dbgTextPrintf(0, 1, 0x4f, "bgfx/examples/lib_bgfx");
-			bgfx::dbgTextPrintf(0, 2, 0x6f, "Description: Initialization and debug text in Elixir and SDL2.");
-
-			// Advance to next frame. Rendering thread will be kicked to
-			// process submitted rendering primitives.
-			bgfx::frame();
-		}
-		SDL_DestroyWindow(*Window);
-		bgfx::shutdown();
 		return nifpp::make(env, nifpp::str_atom("ok"));
 	}
 	catch (nifpp::badarg)
@@ -184,6 +130,60 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 {
 	try
 	{
+		nifpp::resource_ptr< SDL_Window* > Window;
+		nifpp::get< SDL_Window* >(env, argv[0], Window);
+		uint32_t debug = BGFX_DEBUG_TEXT;
+		uint32_t reset = BGFX_RESET_VSYNC;
+		bgfx::reset(Width, Height, reset);
+		// Enable debug text.
+		bgfx::setDebug(debug);
+
+		// Set view 0 clear state.
+		bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x303030ff, 1.0f, 0);
+		SDL_Event e;
+		auto running = true;
+		while (running)
+		{
+			while (SDL_PollEvent(&e))
+			{
+				if (e.type == SDL_QUIT)
+				{
+					running = false;
+				}
+				if (e.type == SDL_KEYDOWN)
+				{
+					running = false;
+				}
+				if (e.type == SDL_WINDOWEVENT)
+				{
+					switch (e.window.event)
+					{
+					case SDL_WINDOWEVENT_CLOSE:
+						running = false;
+						break;
+					}
+				}
+			}
+
+			// Set view 0 default viewport.
+			bgfx::setViewRect(0, 0, 0, Width, Height);
+
+			// This dummy draw call is here to make sure that view 0 is cleared
+			// if no other draw calls are submitted to view 0.
+			bgfx::touch(0);
+
+			// Use debug font to print information about this example.
+			bgfx::dbgTextClear();
+			bgfx::dbgTextImage(bx::uint16_max(Width / 2 / 8, 20) - 20, bx::uint16_max(Height / 2 / 16, 6) - 6, 40, 12, s_logo, 160);
+			bgfx::dbgTextPrintf(0, 1, 0x4f, "bgfx/examples/lib_bgfx");
+			bgfx::dbgTextPrintf(0, 2, 0x6f, "Description: Initialization and debug text in Elixir and SDL2.");
+
+			// Advance to next frame. Rendering thread will be kicked to
+			// process submitted rendering primitives.
+			bgfx::frame();
+		}
+		SDL_DestroyWindow(*Window);
+		bgfx::shutdown();
 		return nifpp::make(env, nifpp::str_atom("ok"));
 	}
 	catch (nifpp::badarg)

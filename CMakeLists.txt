@@ -10,7 +10,6 @@ find_package(SDL2)
 find_package(glfw)
 
 set(MAIN_SOURCE
-    C_src/bgfx_entry.hpp
     c_src/bgfx_nif.cpp
     )
 
