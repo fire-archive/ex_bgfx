@@ -20,7 +20,7 @@ defmodule BgfxTest do
     window = Bgfx.Nif.sdl_create_window
     assert Bgfx.Nif.bgfx_init(:direct3d12, 0, 0, :undefined, :undefined, window) == :ok
     assert Bgfx.Nif.reset(width, height, 0x00000080) == :ok
-    use Bitwise
+    #use Bitwise
     #assert Bgfx.Nif.set_view_clear(0, bor(0x0001, 0x0002), 0x303030ff, 1.0, 0) == :ok
     assert Bgfx.Nif.run(window) == :ok
   end

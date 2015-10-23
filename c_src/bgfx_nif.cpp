@@ -137,7 +137,6 @@ static ERL_NIF_TERM _bgfx_run(ErlNifEnv* env, int argc,
 		uint32_t debug = BGFX_DEBUG_TEXT;
 		// Enable debug text.
 		bgfx::setDebug(debug);
-
 		SDL_ShowWindow(*Window);
 		SDL_Event e;
 		auto running = true;
