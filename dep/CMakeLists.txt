@@ -6,7 +6,7 @@ project(${PROJECT_NAME})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake/Module)
 find_package(OpenGL)
 
-add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12 -DBGFX_CONFIG_RENDERER_NULL=0 -DBGFX_CONFIG_RENDERER_DIRECT3D11 -DBGFX_CONFIG_RENDERER_DIRECT3D9=0 -DBGFX_CONFIG_RENDERER_OPENGL -DBGFX_CONFIG_MULTITHREADED=0 -DENTRY_CONFIG_USE_SDL -DBGFX_CONFIG_USE_TINYSTL)
+add_definitions(-DBGFX_CONFIG_RENDERER_DIRECT3D12 -DBGFX_CONFIG_RENDERER_NULL -DBGFX_CONFIG_RENDERER_DIRECT3D11 -DBGFX_CONFIG_RENDERER_DIRECT3D9 -DBGFX_CONFIG_RENDERER_OPENGL=0 -DBGFX_CONFIG_MULTITHREADED -DENTRY_CONFIG_USE_GLFW)
 
 if (NOT PNACL)
   include_directories(bgfx/3rdparty/khronos)
@@ -38,7 +38,7 @@ set(MAIN_INCLUDE ${MAIN_INCLUDE} bgfx/include/bgfx)
 # Includes
 set(MAIN_SOURCE ${MAIN_SOURCE} 
   #${MAIN_INCLUDE}/c99/bgfx.h
-  ${MAIN_INCLUDE}/bgfx.h
+  #${MAIN_INCLUDE}/bgfx.h
   #${MAIN_INCLUDE}/bgfxdefines.h
   #${MAIN_INCLUDE}/c99/bgfxplatform.h
   #${MAIN_INCLUDE}/bgfxplatform.h
@@ -106,7 +106,7 @@ elseif (ANDROID)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${EXAMPLE_COMMON} ${MAIN_SOURCE})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 #set(CXX clang++)
 set(ERL_ARG erl -eval "io:format(\"~s~n\", [lists:concat([code:root_dir(), \"/erts-\", erlang:system_info(version), \"/include\"])])" -s init stop -noshell)
 

@@ -5,13 +5,17 @@ project(${PROJECT_NAME})
 #include (InstallRequiredSystemLibraries)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake/Module)
 find_package(OpenGL)
-set(SDL2_BUILDING_LIBRARY ON)
-find_package(SDL2)
+#set(SDL2_BUILDING_LIBRARY ON)
+#find_package(SDL2)
+find_package(glfw)
 
 set(MAIN_SOURCE
+    C_src/bgfx_entry.hpp
     c_src/bgfx_nif.cpp
     )
 
+add_definitions(-DENTRY_CONFIG_USE_GLFW -DGLEW_STATIC)
+  
 add_subdirectory(dep)
 
 add_library(${PROJECT_NAME} SHARED ${MAIN_SOURCE})
@@ -32,9 +36,9 @@ add_definitions(-DWIN32
             -D_CRT_SECURE_NO_WARNINGS
             -D_CRT_SECURE_NO_DEPRECATE)
 endif()
-include_directories(dep/bx/include/compat/msvc dep/bgfx/examples/common dep/bgfx/3rdparty dep/bgfx/include dep/bx/include dep/nifpp ${ERLANG_PATH} ${OPENGL_INCLUDE_DIR} ${SDL2_INCLUDE_DIR})
+include_directories(dep/bx/include/compat/msvc dep/bgfx/examples/common dep/bgfx/3rdparty dep/bgfx/include dep/bx/include dep/nifpp ${ERLANG_PATH} ${OPENGL_INCLUDE_DIR} ${SDL2_INCLUDE_DIR} ${GLFW3_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} bgfx ${SDL2_LIBRARY})
+target_link_libraries(${PROJECT_NAME} bgfx ${SDL2_LIBRARY} ${GLFW3_LIBRARIES})
 
 install(FILES ${SDL2_INCLUDE_DIR}/../../bin/SDL2.dll DESTINATION ${CMAKE_SOURCE_DIR})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

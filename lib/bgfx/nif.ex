@@ -35,12 +35,20 @@ defmodule Bgfx.Nif do
   def set_view_clear(id, flags, rgba, depth, stencil) do
     _bgfx_set_view_clear(id, flags, rgba, depth, stencil)
   end
+
+  def run do
+    _bgfx_run
+  end
   
   def _bgfx_reset(_,_,_) do
     exit(:nif_library_not_loaded)
   end
   
   def _bgfx_set_view_clear(_,_,_,_,_) do
+    exit(:nif_library_not_loaded)
+  end
+
+  def _bgfx_run do
     exit(:nif_library_not_loaded)
   end
   
