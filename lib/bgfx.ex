@@ -1,6 +1,12 @@
 defmodule Bgfx do
+  use Application
 
-  def start do
+  def start(_type, _args) do
+    #Supervisor.start_link [], strategy: :one_for_one
+    run
+  end
+
+  def run do
     width = 1280
     height = 768
     window = Bgfx.Nif.sdl_create_window
@@ -10,5 +16,5 @@ defmodule Bgfx do
     #assert Bgfx.Nif.set_view_clear(0, bor(0x0001, 0x0002), 0x303030ff, 1.0, 0) == :ok
     Bgfx.Nif.run(window)
     :ok
-  end
+  end    
 end
