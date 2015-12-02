@@ -43,15 +43,15 @@ defmodule Mix.Tasks.Compile.Bgfx do
       case :code.priv_dir(:bgfx) do
         {:error, _error_code} -> working_dir = :filename.join(:filename.dirname(Ebin), "priv") 
         priv -> working_dir = priv
-      end
+      end  
       case File.mkdir(working_dir) do
         {:ok, _error_code} -> nil
         {:error, :eexist} -> nil
-        _ -> raise "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.mkdir"
+        error -> raise error
       end
       case File.cd(working_dir) do
         :ok -> nil
-        _ -> raise "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.cd"          
+        error -> raise error          
       end
       {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> (to_string working_dir), "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
       IO.binwrite result
