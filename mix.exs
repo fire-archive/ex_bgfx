@@ -1,37 +1,3 @@
-defmodule Mix.Tasks.Compile.Bgfx do
-  @shortdoc "Compiles Bgfx"
-  
-  def run(_) do
-    if match? {:win32, _}, :os.type do
-      starting_dir = System.cwd()
-      
-      case :code.priv_dir(Mix.Project.config[:app]) do
-        {:error, _error_code} -> working_dir = starting_dir <> "/priv" 
-        priv -> working_dir = priv
-      end
-      case File.mkdir(to_string working_dir) do
-        {:ok, _error_code} -> nil
-        {:error, :eexist} -> nil
-        _ -> raise "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.mkdir\n"
-      end
-      case File.cd(working_dir) do
-        :ok -> nil
-        _ -> raise "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.cd\n"          
-      end
-      {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> (to_string working_dir), "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
-      IO.binwrite result
-      {result, _error_code} = System.cmd("cmake", ["--build", ".", "--target", "install"], stderr_to_stdout: true) 
-      IO.binwrite result
-      File.cd(starting_dir)
-    else
-      {result, _error_code} = System.cmd("make", ["priv/bgfx.so"], stderr_to_stdout: true)
-      IO.binwrite result
-    end
-    
-    :ok
-  end
-end
-
 defmodule ExBgfx.Mixfile do
   use Mix.Project
   
@@ -66,6 +32,37 @@ defmodule ExBgfx.Mixfile do
     [{:exrm, "~> 0.19"}]
   end
 
+end
 
-
+defmodule Mix.Tasks.Compile.Bgfx do
+  @shortdoc "Compiles Bgfx"
+  
+  def run(_) do
+    if match? {:win32, _}, :os.type do
+      starting_dir = System.cwd()
+      case :code.priv_dir(Mix.Project.config[:app]) do
+        {:error, _error_code} -> working_dir = starting_dir <> "/priv" 
+        priv -> working_dir = priv
+      end
+      case File.mkdir(working_dir) do
+        {:ok, _error_code} -> nil
+        {:error, :eexist} -> nil
+        _ -> raise "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.mkdir"
+      end
+      case File.cd(working_dir) do
+        :ok -> nil
+        _ -> raise "Unknown error at Mix.Tasks.Compile.Bgfx.run.File.cd"          
+      end
+      {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> (to_string working_dir), "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
+      IO.binwrite result
+      {result, _error_code} = System.cmd("cmake", ["--build", ".", "--target", "install"], stderr_to_stdout: true) 
+      IO.binwrite result
+      File.cd(starting_dir)
+    else
+      {result, _error_code} = System.cmd("make", ["priv/bgfx.so"], stderr_to_stdout: true)
+      IO.binwrite result
+    end
+    
+    :ok
+  end
 end
