@@ -40,8 +40,8 @@ defmodule Mix.Tasks.Compile.Bgfx do
   def run(_) do
     if match? {:win32, _}, :os.type do
       starting_dir = System.cwd()
-      case :code.priv_dir(Mix.Project.config[:app]) do
-        {:error, _error_code} -> working_dir = starting_dir <> "/priv" 
+      case :code.priv_dir(:bgfx) do
+        {:error, _error_code} -> working_dir = :filename.join(:filename.dirname(Ebin), "priv") 
         priv -> working_dir = priv
       end
       case File.mkdir(working_dir) do
