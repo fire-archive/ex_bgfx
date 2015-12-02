@@ -34,6 +34,7 @@ FIND_LIBRARY( GLFW3_LIBRARIES NAMES glfw3 PATHS
     $ENV{GLFWDIR}/lib
     $ENV{GLFWDIR}/support/msvc80/Debug
     $ENV{GLFWDIR}/support/msvc80/Release
+    $ENV{GLFWDIR}/lib-vc2015
     /usr/local/lib
     /usr/local/X11R6/lib
     /usr/X11R6/lib
