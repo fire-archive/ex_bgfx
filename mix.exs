@@ -41,11 +41,11 @@ defmodule Mix.Tasks.Compile.Bgfx do
     if match? {:win32, _}, :os.type do
       starting_dir = System.cwd()
       case :code.priv_dir(:bgfx) do
-        {:error, _error_code} -> working_dir = :filename.join(:filename.dirname(Ebin), "priv") 
+        {:error, _error_code} -> install_prefix = :filename.join(:filename.dirname(Ebin), "priv") 
           #priv -> working_dir = :filename.join(:filename.dirname(Ebin), "priv") 
           _ -> install_prefix = to_string :code.priv_dir(:bgfx)
       end
-      working_dir = install_prefix <> "../build"
+      working_dir = install_prefix <> "/../build"
       File.mkdir(working_dir)
       File.cd(working_dir)
       {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> install_prefix, "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
