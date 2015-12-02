@@ -29,7 +29,7 @@ defmodule ExBgfx.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:exrm, "~> 0.19"}]
+    [{:exrm, "~> 1.0.0-rc7"}]
   end
 
 end
@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Compile.Bgfx do
           #priv -> working_dir = :filename.join(:filename.dirname(Ebin), "priv") 
           _ -> install_prefix = to_string :code.priv_dir(:bgfx)
       end
-      working_dir = install_prefix <> "/../build"
+      working_dir = install_prefix <> "../build"
       File.mkdir(working_dir)
       File.cd(working_dir)
       {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> install_prefix, "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
