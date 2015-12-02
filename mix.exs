@@ -42,12 +42,12 @@ defmodule Mix.Tasks.Compile.Bgfx do
       starting_dir = System.cwd()
       case :code.priv_dir(:bgfx) do
         {:error, _error_code} -> working_dir = :filename.join(:filename.dirname(Ebin), "priv") 
-          priv -> working_dir = priv
+          priv -> working_dir = to_string priv
           #_ -> working_dir = to_string :code.priv_dir(:bgfx)
       end  
       File.mkdir(working_dir)
       File.cd(working_dir)
-      {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <>  (to_string :code.priv_dir(:bgfx)), "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
+      {result, _error_code} = System.cmd("cmake", ["-GVisual Studio 14 2015 Win64", "-DCMAKE_INSTALL_PREFIX=" <> working_dir, "-DCMAKE_SYSTEM_VERSION=10.0", starting_dir], stderr_to_stdout: true) 
       IO.binwrite result
       {result, _error_code} = System.cmd("cmake", ["--build", working_dir, "--target", "install"], stderr_to_stdout: true) 
       IO.binwrite result
