@@ -39,5 +39,5 @@ include_directories(dep/bx/include/compat/msvc dep/bgfx/examples/common dep/bgfx
 
 target_link_libraries(${PROJECT_NAME} bgfx ${SDL2_LIBRARY} ${GLFW3_LIBRARIES})
 
-install(FILES ${SDL2_INCLUDE_DIR}/../../bin/SDL2.dll DESTINATION ${CMAKE_SOURCE_DIR})
+install(FILES ${SDL2_INCLUDE_DIR}/../lib/x64/SDL2.dll DESTINATION ${CMAKE_SOURCE_DIR})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION .)

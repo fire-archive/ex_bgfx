@@ -38,8 +38,8 @@ static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 {
 	nifpp::register_resource< bgfx::CallbackI* >(env, nullptr,
 												 "callback_interface_ptr");
-	nifpp::register_resource< bx::ReallocatorI* >(env, nullptr,
-												  "reallocator_interface_ptr");
+	//nifpp::register_resource< bx::ReallocatorI* >(env, nullptr,
+	//											  "reallocator_interface_ptr");
 	nifpp::register_resource< SDL_Window* >(env, nullptr,
 											"sdl_window_ptr");
 

@@ -88,7 +88,7 @@ set(EXAMPLE_COMMON
         ${COMMON_FONT_DIR}/text_metrics.cpp ${COMMON_FONT_DIR}/text_metrics.h
         ${COMMON_FONT_DIR}/utf8.cpp ${COMMON_FONT_DIR}/utf8.h ${COMMON_FONT_DIR}/varying.def.sc
         ${COMMON_ENTRY_DIR}/cmd.cpp  ${COMMON_ENTRY_DIR}/cmd.h
-        ${COMMON_ENTRY_DIR}/dbg.cpp  ${COMMON_ENTRY_DIR}/dbg.h
+        #${COMMON_ENTRY_DIR}/dbg.cpp  ${COMMON_ENTRY_DIR}/dbg.h
         #${COMMON_ENTRY_DIR}/entry.cpp  ${COMMON_ENTRY_DIR}/entry.h  ${COMMON_ENTRY_DIR}/entry_p.h
         ${COMMON_ENTRY_DIR}/input.cpp  ${COMMON_ENTRY_DIR}/input.h
     )
