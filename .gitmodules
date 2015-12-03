@@ -6,4 +6,4 @@
 	url = https://github.com/bkaradzic/bx.git
 [submodule "dep/nifpp"]
 	path = dep/nifpp
-	url = https://github.com/goertzenator/nifpp.git
+	url = https://github.com/fire/nifpp.git
