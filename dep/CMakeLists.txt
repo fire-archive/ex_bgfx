@@ -107,11 +107,6 @@ endif()
 
 add_library(${PROJECT_NAME} STATIC ${EXAMPLE_COMMON} ${MAIN_SOURCE})
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
-#set(CXX clang++)
-set(ERL_ARG erl -eval "io:format(\"~s~n\", [lists:concat([code:root_dir(), \"/erts-\", erlang:system_info(version), \"/include\"])])" -s init stop -noshell)
-
-execute_process(COMMAND erl ARGS ${ERL_ARG} OUTPUT_VARIABLE ERLANG_PATH)
-message(STATUS "Detecting Erlang Path -- ${ERLANG_PATH}")
 
 if(MSVC)
 add_definitions(-DWIN32

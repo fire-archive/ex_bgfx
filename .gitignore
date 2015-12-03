@@ -7,3 +7,4 @@ dep/_build/
 rel/
 dep/SDL2-2.0.3/
 dep/GLFW/
+Debug/
