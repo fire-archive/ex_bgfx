@@ -1,0 +1,105 @@
+version: 0.1.{build}
+
+os: Visual Studio 2015
+
+init:
+
+- ps: 
+
+install:
+
+- ps: >-
+
+    git submodule update --init --recursive
+
+
+
+    Start-FileDownload 'https://github.com/fire/ex_bgfx/releases/download/v0.1-alpha/otp_win64_18.exe'
+
+
+
+    $arguments = "/S /D=C:\Program Files\erl7.1-dirty"
+
+
+
+    start-process -FilePath otp_win64_18.exe -ArgumentList $arguments -Wait
+
+
+
+    Start-FileDownload 'https://github.com/elixir-lang/elixir/releases/download/v1.1.1/Precompiled.zip'
+
+
+
+    7z x Precompiled.zip -oelixir
+
+
+
+    Start-FileDownload 'https://github.com/fire/ex_bgfx/releases/download/v0.1-alpha/SDL2-devel-2.0.3-VC.zip'
+
+
+
+    7z x SDL2-devel-2.0.3-VC.zip
+
+
+
+    Start-FileDownload 'https://github.com/fire/ex_bgfx/releases/download/v0.1-alpha/glfw-3.1.2.bin.WIN64.zip'
+
+
+
+    7z x glfw-3.1.2.bin.WIN64.zip
+
+build_script:
+
+- cmd: >-
+
+    echo %PATH%
+
+
+
+    set PATH=%cd%/elixir/bin;C:\Program Files\erl7.1-dirty\bin;%PATH%
+
+
+
+    echo %PATH%
+
+
+
+    set SDL2_PATH=%CD%/SDL2-2.0.3
+
+
+
+    set GLFWDIR=%CD%/glfw-3.1.2.bin.WIN64
+
+
+
+    set MIX_ENV=dev
+
+
+
+    mix local.hex --force
+
+
+
+    mix local.rebar --force
+
+
+
+    mix deps.get --force
+
+
+
+    mix compile
+
+
+
+    mix release
+
+
+
+    copy /b/v/y SDL2.dll rel\bgfx\erts-7.1\bin\
+
+artifacts:
+
+- path: rel\bgfx
+
+  name: ex_bgfx
